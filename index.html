@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architecture des Tests : Stratégies et Compromis</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="slide-container title-layout">
+    <h1>Architecture des Tests</h1>
+    <p>Stratégies, Compromis et Vision DevOps</p>
+    <div class="presenter-tag">
+        <div class="presenter-role">Présenté par </div>
+        <div class="presenter-name">Elfried Nel</div>
+
+    </div>
+</div>
+
+<div class="slide-container">
+    <h2 class="slide-title">1. Architecture Mono-repo</h2>
+    <div class="content-area">
+        <div class="two-column">
+            <div>
+                <h3>Le concept intégré</h3>
+                <p>Les tests vivent avec le code.</p>
+                <ul class="bullet-list">
+                    <li>Version des tests synchronisée par défaut</li>
+                    <li>Pipeline CI unique et centralisé</li>
+                    <li>Développement atomique</li>
+                </ul>
+                <div class="workflow-box">Flux : Push → <u>Tests</u> → Build → Deploy</div>
+                
+                <div class="consequence-row">
+                    <div class="consequence-item">
+                        <i class="fa-solid fa-hourglass-start" style="color: #f59e0b;"></i>
+                        <span>Flux ralenti (attente)</span>
+                    </div>
+                    <div class="consequence-item">
+                        <i class="fa-solid fa-lock" style="color: #10b981;"></i>
+                        <span>Déploiement sécurisé</span>
+                    </div>
+                </div>
+            </div>
+            <div class="image-wrapper"><img src="images/image_monorepo.png" alt="Mono-repo"></div>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container">
+    <h2 class="slide-title">Dangers du Mono-repo</h2>
+    <div class="content-area">
+        <div class="tiled-content">
+            <div class="tile tile-danger">
+                <i class="fa-solid fa-skull-crossbones"></i>
+                <h3>Paralysie du Pipeline</h3>
+                <p>Un seul test instable (Flaky Test) bloque les déploiements de <b>tous</b> les projets.</p>
+                <p style="font-size: 14px; margin-top: 10px; color: #b91c1c;"><i>Effet domino : Blocage complet de la chaîne de livraison.</i></p>
+            </div>
+            <div class="tile tile-danger">
+                <i class="fa-solid fa-code-merge"></i>
+                <h3>Enfer des Conflits Git</h3>
+                <p>Modifications massives sur les fichiers partagés (configs, mocks, data).</p>
+                <p style="font-size: 14px; margin-top: 10px; color: #b91c1c;"><i>Friction : Perte de temps majeure pour synchroniser l'ensemble de l'équipe.</i></p>
+            </div>
+            <div class="tile tile-danger">
+                <i class="fa-solid fa-radiation"></i>
+                <h3>Érosion de la Qualité</h3>
+                <p>L'extrême lenteur de la CI pousse l'équipe à ignorer les alertes ou "skip" les tests.</p>
+                <p style="font-size: 14px; margin-top: 10px; color: #b91c1c;"><i>Risque Équipe : Désengagement collectif face à une validation trop pesante.</i></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container">
+    <h2 class="slide-title">2. Architecture Multi-repo</h2>
+    <div class="content-area">
+        <div class="tiled-content" style="margin-bottom: 30px;">
+            <div class="tile" style="border-top-color: #10b981; background: #f0fdf4;">
+                <i class="fa-solid fa-bolt-lightning" style="color: #10b981;"></i>
+                <h3>Agilité de Déploiement</h3>
+                <p>L'application est déployée en quelques minutes. Les tests E2E s'exécutent en tâche de fond.</p>
+            </div>
+            <div class="tile" style="border-top-color: #10b981; background: #f0fdf4;">
+                <i class="fa-solid fa-microchip" style="color: #10b981;"></i>
+                <h3>Stack Technologique Libre</h3>
+                <p>On choisit l'outil le plus performant pour le test (Playwright, Python...) sans contrainte.</p>
+            </div>
+            <div class="tile" style="border-top-color: #10b981; background: #f0fdf4;">
+                <i class="fa-solid fa-user-shield" style="color: #10b981;"></i>
+                <h3>Gouvernance QA</h3>
+                <p>Séparation des accès. Les testeurs sont maîtres de leur propre cycle de vie.</p>
+            </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; align-items: center;">
+            <div class="workflow-box">Flux : Build → Deploy → <u>Tests Distants</u></div>
+            
+            <div class="consequence-row" style="width: 100%; justify-content: center;">
+                <div class="consequence-item">
+                    <i class="fa-solid fa-bolt" style="color: #38bdf8;"></i>
+                    <span>Déploiement ultra-rapide</span>
+                </div>
+                <div class="consequence-item">
+                    <i class="fa-solid fa-triangle-exclamation" style="color: #ef4444;"></i>
+                    <span>Risque de bug a posteriori</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container">
+    <h2 class="slide-title">Limites du Multi-repo</h2>
+    <div class="content-area">
+        <div class="tiled-content">
+            <div class="tile" style="border-top-color: #ef4444;"><i class="fa-solid fa-link-slash"></i><h3>Désynchronisation</h3><p>Écart de version entre code et tests.</p></div>
+            <div class="tile" style="border-top-color: #ef4444;"><i class="fa-solid fa-gears"></i><h3>Ops</h3><p>Orchestration complexe (Triggers).</p></div>
+            <div class="tile" style="border-top-color: #ef4444;"><i class="fa-solid fa-code-merge"></i><h3>Maintenance</h3><p>Double PR obligatoire.</p></div>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container">
+    <h2 class="slide-title">Étude de Cas : Changement d'API</h2>
+    <h3 style="text-align:center; margin-bottom: 30px;">Action : Changement format de date (DD-MM-YY → YYYY-MM-DD)</h3>
+    <div class="content-area">
+        <div class="scenario-grid">
+            <div class="card card-mono">
+                <h3><i class="fa-solid fa-shield-halved"></i> Mono-repo</h3>
+                <div class="step"><div class="step-num">1</div><div class="step-text">Modification du code API.</div></div>
+                <div class="step"><div class="step-num">2</div><div class="step-text"><b>Blocage CI :</b> Les tests échouent car ils attendent l'ancien format.</div></div>
+                <div class="step"><div class="step-num">3</div><div class="step-text">Correction du test <b>dans la même PR</b>.</div></div>
+                <div class="impact-footer" style="color: #0369a1;">✅ Coherence garantie : Zéro bug déployé.</div>
+            </div>
+            <div class="card card-multi">
+                <h3><i class="fa-solid fa-triangle-exclamation"></i> Multi-repo</h3>
+                <div class="step"><div class="step-num">1</div><div class="step-text">Modification du code API.</div></div>
+                <div class="step"><div class="step-num">2</div><div class="step-text"><b>Déploiement :</b> La CI de l'app est verte. Le bug part en Prod.</div></div>
+                <div class="step"><div class="step-num">3</div><div class="step-text"><b>Alerte différée :</b> Le repo de tests échoue après coup.</div></div>
+                <div class="impact-footer" style="color: #be123c;">❌ Rupture : Le client voit le bug en premier.</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container">
+    <h2 class="slide-title">Synthèse : Quel modèle choisir ?</h2>
+    <div class="content-area">
+        <div class="table-wrapper">
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th style="width: 250px;">Critère de choix</th>
+                        <th>Architecture Mono-repo</th>
+                        <th>Architecture Multi-repo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="critere-cell"><i class="fa-solid fa-gauge-high"></i> Feedback Loop</td>
+                        <td>
+                            <span class="status-pill pill-pos">Immédiat</span>
+                            <span class="detail-text">Échec avant merge. Sécurité max.</span>
+                        </td>
+                        <td>
+                            <span class="status-pill pill-neg">Différé</span>
+                            <span class="detail-text">Échec après déploiement. Risque de rollback.</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="critere-cell"><i class="fa-solid fa-code-pull-request"></i> Maintenance PR</td>
+                        <td>
+                            <span class="status-pill pill-pos">Simplifiée</span>
+                            <span class="detail-text">1 seule PR pour le code et les tests.</span>
+                        </td>
+                        <td>
+                            <span class="status-pill pill-neg">Double effort</span>
+                            <span class="detail-text">2 PRs distinctes à synchroniser manuellement.</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="critere-cell"><i class="fa-solid fa-server"></i> Complexité Ops</td>
+                        <td>
+                            <span class="status-pill pill-pos">Nulle</span>
+                            <span class="detail-text">Pipeline standard et linéaire.</span>
+                        </td>
+                        <td>
+                            <span class="status-pill pill-neg">Élevée</span>
+                            <span class="detail-text">Nécessite triggers, webhooks et secrets.</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="critere-cell"><i class="fa-solid fa-users"></i> Autonomie QA</td>
+                        <td>
+                            <span class="status-pill pill-neg">Limitée</span>
+                            <span class="detail-text">QA dépend du cycle de vie des Devs.</span>
+                        </td>
+                        <td>
+                            <span class="status-pill pill-pos">Totale</span>
+                            <span class="detail-text">QA maître de ses outils et de son rythme.</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="critere-cell"><i class="fa-solid fa-clock-rotate-left"></i> Time-to-Market</td>
+                        <td>
+                            <span class="status-pill pill-neutral">Modéré</span>
+                            <span class="detail-text">Le build est ralenti par les tests.</span>
+                        </td>
+                        <td>
+                            <span class="status-pill pill-pos">Très Rapide</span>
+                            <span class="detail-text">Le déploiement est quasi-instantané.</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container">
+    <h2 class="slide-title">Conclusion & Analyse</h2>
+    <div class="content-area">
+        <div class="two-column">
+            <div>
+                <h3>Quand choisir le Mono ?</h3>
+                <ul class="bullet-list">
+                    <li>Équipes agiles et unifiées.</li>
+                    <li>Besoin de sécurité maximale.</li>
+                    <li>Projets avec moins de 50 testeurs.</li>
+                </ul>
+            </div>
+            <div>
+                <h3>Quand choisir le Multi ?</h3>
+                <ul class="bullet-list">
+                    <li>Grandes structures (Enterprise).</li>
+                    <li>Équipes QA/Dev indépendantes.</li>
+                    <li>Nécessité de déploiement ultra-fréquent.</li>
+                </ul>
+            </div>
+        </div>
+        <div style="margin-top: 40px; text-align: center; font-style: italic; color: #1e293b; font-size: 24px;">
+            "La meilleure architecture est celle qui équilibre votre besoin de vitesse avec votre exigence de qualité."
+        </div>
+    </div>
+</div>
+</body>
+</html>
